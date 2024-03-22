@@ -1,0 +1,1 @@
+C:\Users\SimonZiegler\source\repos\custom-elements\examples\vanilla\target\wasm32-unknown-unknown\release\vanilla_web_component.wasm: C:\Users\SimonZiegler\source\repos\custom-elements\examples\vanilla\src\lib.rs C:\Users\SimonZiegler\source\repos\custom-elements\src\lib.rs C:\Users\SimonZiegler\source\repos\custom-elements\src\make_custom_element.js
