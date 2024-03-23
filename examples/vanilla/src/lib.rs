@@ -90,14 +90,13 @@ impl MyTextField {
     fn view(&self) -> Node {
         let window = window().unwrap();
         let document = window.document().unwrap();
-        let el = document.create_element("p").unwrap();
-        let t1 = document.create_text_node("Welcome to my web component, ");
-        let t3 = document.create_text_node("!");
-        el.append_child(&t1).unwrap();
+        let el: web_sys::Element = document.create_element("p").unwrap();
         el.append_child(&self.name_node).unwrap();
-        el.append_child(&t3).unwrap();
 
-        el.unchecked_into()
+        let tf: web_sys::Element = document.create_element("input").unwrap();
+
+        //el.unchecked_into();
+        tf.unchecked_into() 
     }
 }
 
@@ -116,7 +115,7 @@ impl CustomElement for MyTextField {
     }
 
     fn observed_attributes() -> &'static [&'static str] {
-        &["name"]
+        &["label"]
     }
 
     fn attribute_changed_callback(
@@ -126,9 +125,9 @@ impl CustomElement for MyTextField {
         _old_value: Option<String>,
         new_value: Option<String>,
     ) {
-        if name == "name" {
+        if name == "label" {
             self.name_node
-                .set_data(&new_value.unwrap_or_else(|| "friend".to_string()));
+                .set_data(&new_value.unwrap_or_else(|| "label".to_string()));
         }
     }
 
