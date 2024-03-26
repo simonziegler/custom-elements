@@ -1,90 +1,42 @@
 use custom_elements::{inject_style, CustomElement};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{window, HtmlElement, Node, Text};
+use web_sys::{window, HtmlElement, Node, Text};use wasm_bindgen::prelude::*;
+//use web_sys::{HtmlInputElement, HtmlLabelElement};
 
-// The boring part: a basic DOM component
-struct MyWebComponent {
-    name_node: Text,
-}
-
-impl MyWebComponent {
-    fn new() -> Self {
-        let window = window().unwrap();
-        let document = window.document().unwrap();
-        let name_node = document.create_text_node("friend");
-        Self { name_node }
-    }
-
-    fn view(&self) -> Node {
-        let window = window().unwrap();
-        let document = window.document().unwrap();
-        let el = document.create_element("p").unwrap();
-        let t1 = document.create_text_node("Welcome to my web component, ");
-        let t3 = document.create_text_node("!");
-        el.append_child(&t1).unwrap();
-        el.append_child(&self.name_node).unwrap();
-        el.append_child(&t3).unwrap();
-
-        el.unchecked_into()
-    }
-}
-
-impl Default for MyWebComponent {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-// Here's the interesting part: configuring the Custom Element
-impl CustomElement for MyWebComponent {
-    fn inject_children(&mut self, this: &HtmlElement) {
-        inject_style(&this, "p { color: green; }");
-        let node = self.view();
-        this.append_child(&node).unwrap_throw();
-    }
-
-    fn observed_attributes() -> &'static [&'static str] {
-        &["name"]
-    }
-
-    fn attribute_changed_callback(
-        &mut self,
-        _this: &HtmlElement,
-        name: String,
-        _old_value: Option<String>,
-        new_value: Option<String>,
-    ) {
-        if name == "name" {
-            self.name_node
-                .set_data(&new_value.unwrap_or_else(|| "friend".to_string()));
-        }
-    }
-
-    fn connected_callback(&mut self, _this: &HtmlElement) {
-        log("connected");
-    }
-
-    fn disconnected_callback(&mut self, _this: &HtmlElement) {
-        log("disconnected");
-    }
-
-    fn adopted_callback(&mut self, _this: &HtmlElement) {
-        log("adopted");
-    }
-}
-
-// wasm_bindgen entry point defines the Custom Element, then creates a few of them
 #[wasm_bindgen]
-pub fn run() -> Result<(), JsValue> {
-    // define the Custom Element
-    MyWebComponent::define("ce-vanilla");
-
-    Ok(())
+pub struct TextField {
+    label: HtmlElement,
+    input: HtmlElement,
 }
 
 #[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
+impl TextField {
+    #[wasm_bindgen(constructor)]
+    pub fn new(label_text: &str) -> TextField {
+        let document = web_sys::window().unwrap().document().unwrap();
+        let label = document.create_element("label").unwrap().dyn_into::<HtmlElement>().unwrap();
+        let input = document.create_element("input").unwrap().dyn_into::<HtmlElement>().unwrap();
+
+        label.set_inner_text(label_text);
+        input.set_type("text");
+
+        TextField { label, input }
+    }
+
+    pub fn set_label(&mut self, text: &str) {
+        self.label.set_inner_text(text);
+    }
+
+    pub fn value(&self) -> String {
+        self.input.value()
+    }
+
+    pub fn set_value(&mut self, value: &str) {
+        self.input.set_value(value);
+    }
+
+    pub fn bind_on_change(&self, closure: &Closure<dyn FnMut()>) {
+        self.input.set_oninput(Some(closure.as_ref().unchecked_ref()));
+    }
 }
