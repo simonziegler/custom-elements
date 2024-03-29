@@ -1,7 +1,7 @@
 use custom_elements::{inject_style, CustomElement};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{window, HtmlElement, Node, Text};
+use web_sys::{window, HtmlElement, HtmlInputElement, Node, Text, Event};
 
 // The boring part: a basic DOM component
 struct MyWebComponent {
@@ -75,27 +75,50 @@ impl CustomElement for MyWebComponent {
 }
 
 
+
+
+
+
+
+
+
+
+
 struct MyTextField {
-    name_node: Text,
+    input: HtmlInputElement,
 }
 
 impl MyTextField {
     fn new() -> Self {
         let window = window().unwrap();
         let document = window.document().unwrap();
-        let name_node = document.create_text_node("friend");
-        Self { name_node }
+        let input = document.create_element("input").unwrap().dyn_into::<HtmlInputElement>().unwrap();
+        Self { input }
     }
 
     fn view(&self) -> Node {
         let window = window().unwrap();
         let document = window.document().unwrap();
         let el: web_sys::Element = document.create_element("p").unwrap();
-        el.append_child(&self.name_node).unwrap();
+        el.append_child(&self.input).unwrap();
 
         let tf: web_sys::Element = document.create_element("input").unwrap();
 
-        //el.unchecked_into();
+        let input_clone = self.input.clone();
+        
+        let closure = Closure::wrap(Box::new(move |e: Event| {
+            if let Some(input) = e.target().and_then(|t| t.dyn_into::<HtmlInputElement>().ok()) {
+                log(&format!("Input event: {}", input.value()));
+                // Emit the custom event from the web component
+                let custom_event = web_sys::CustomEvent::new("change").unwrap();
+                input_clone.dispatch_event(&custom_event).unwrap();
+                log("Event dispatched");
+            }
+        }) as Box<dyn FnMut(_)>);
+
+        self.input.add_event_listener_with_callback("change", closure.as_ref().unchecked_ref()).unwrap();
+        
+        closure.forget(); // Important! Otherwise, the closure will be deallocated.
         tf.unchecked_into() 
     }
 }
@@ -125,10 +148,10 @@ impl CustomElement for MyTextField {
         _old_value: Option<String>,
         new_value: Option<String>,
     ) {
-        if name == "label" {
-            self.name_node
-                .set_data(&new_value.unwrap_or_else(|| "label".to_string()));
-        }
+        // if name == "label" {
+        //     self.input
+        //         .set_data(&new_value.unwrap_or_else(|| "label".to_string()));
+        // }
     }
 
     fn connected_callback(&mut self, _this: &HtmlElement) {
