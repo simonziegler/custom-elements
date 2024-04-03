@@ -23,5 +23,7 @@ features = [
   "Document",
   "HtmlElement",
   "Node",
-  "Text"
+  "Text",
+  "CustomEvent",
+  "CustomEventInit"
 ]

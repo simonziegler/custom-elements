@@ -1,7 +1,8 @@
 use custom_elements::{inject_style, CustomElement};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{window, HtmlElement, HtmlInputElement, Node, Text, Event};
+use web_sys::{window, HtmlElement, HtmlInputElement, Node, Text, Event, CustomEvent, CustomEventInit};
+use wasm_bindgen::closure::Closure;
 
 // The boring part: a basic DOM component
 struct MyWebComponent {
@@ -108,24 +109,41 @@ impl MyTextField {
         let _l: web_sys::Element = document.create_element("label").unwrap();
         let _tf: web_sys::Element = document.create_element("input").unwrap();
 
-        let input_clone = self.input.clone();
-        
-        let closure = Closure::wrap(Box::new(move |e: Event| {
-            if let Some(input) = e.target().and_then(|t| t.dyn_into::<HtmlInputElement>().ok()) {
-                log(&format!("Input event: {}", input.value()));
-                // Emit the custom event from the web component
-                let custom_event = web_sys::CustomEvent::new("change").unwrap();
-                input_clone.dispatch_event(&custom_event).unwrap();
-                log("Event dispatched");
-            }
-        }) as Box<dyn FnMut(_)>);
+        // let closure = Closure::wrap(Box::new(move |e: Event| {
+        //     if let Some(input) = e.target().and_then(|t| t.dyn_into::<HtmlInputElement>().ok()) {
+        //         log(&format!("Input event: {}", input.value()));
+        //         // Emit the custom event from the web component
+        //         let custom_event = web_sys::CustomEvent::new("change").unwrap();
+        //         input.dispatch_event(&custom_event).unwrap();
+        //         log("Event dispatched");
+        //     }
+        // }) as Box<dyn FnMut(_)>);
 
-        self.input.add_event_listener_with_callback("change", closure.as_ref().unchecked_ref()).unwrap();
-        
-        closure.forget(); // Important! Otherwise, the closure will be deallocated.
+        // let closure = Closure::wrap(Box::new(move |event: Event| {
+        //     if let Some(input) = event.target().and_then(|t| t.dyn_into::<HtmlInputElement>().ok()) {
+        //         let value = input.value();
+        //         log(&format!("Input changed: {}", value));
+    
+        //         // Emit the same event from the parent component
+        //         let custom_event = Event::new("input-change").unwrap();
+        //         custom_event.set_target(Some(&input.into()));
+        //         shadow_root.dispatch_event(&custom_event).unwrap();
+        //     }
+        // }) as Box<dyn FnMut(_)>);
+    
+        // shadow_root
+        //     .add_event_listener_with_callback("change", closure.as_ref().unchecked_ref())
+        //     .unwrap();
+    
+        // closure.forget(); // Prevents the closure from being garbage collected
+
+        //closure.forget(); // Important! Otherwise, the closure will be deallocated.
         el.unchecked_into() 
     }
+
 }
+
+
 
 impl Default for MyTextField {
     fn default() -> Self {
@@ -140,7 +158,6 @@ impl Drop for MyTextField {
         log("MyTextField dropped");
     }
 }
-
 
 // Here's the interesting part: configuring the Custom Element
 impl CustomElement for MyTextField {

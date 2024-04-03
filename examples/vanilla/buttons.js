@@ -53,7 +53,7 @@ class tf extends HTMLElement {
   const add = document.querySelector(".add");
   const update = document.querySelector(".update");
   const remove = document.querySelector(".remove");
-  let myTextField;
+  let ceTextField;
   
   update.disabled = true;
   remove.disabled = true;
@@ -64,11 +64,11 @@ class tf extends HTMLElement {
   
   add.onclick = function () {
     // Create a custom tf element
-    myTextField = document.createElement("ce-text-field");
-    myTextField.setAttribute("label", "Label");
-    document.body.appendChild(myTextField);
+    ceTextField = document.createElement("ce-text-field");
+    ceTextField.setAttribute("label", "Label");
+    document.body.appendChild(ceTextField);
 
-    myTextField.addEventListener('change', (event) => {
+    ceTextField.addEventListener('change', (event) => {
       console.log('Text Field changed:', event.detail);
     });
   
@@ -79,12 +79,12 @@ class tf extends HTMLElement {
   
   update.onclick = function () {
     // Randomly update text field's attributes
-    myTextField.setAttribute("label", "New Label");
+    ceTextField.setAttribute("label", "New Label");
   };
   
   remove.onclick = function () {
     // Remove the text field
-    document.body.removeChild(myTextField);
+    document.body.removeChild(ceTextField);
   
     update.disabled = true;
     remove.disabled = true;
