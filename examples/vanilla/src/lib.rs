@@ -1,7 +1,7 @@
 use custom_elements::{inject_style, CustomElement};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{window, Element, HtmlElement, HtmlInputElement, Node, Text, Event, EventTarget, CustomEvent, CustomEventInit, ShadowRoot};
+use web_sys::{window, Element, HtmlElement, HtmlInputElement, Node, Text, Event, CustomElementRegistry, ShadowRoot};
 use wasm_bindgen::closure::Closure;
 
 // The boring part: a basic DOM component
@@ -130,8 +130,28 @@ impl MyTextField {
                 let shadow_root = get_shadow_root_from_input(&input);
                 log(&format!("Shadow root is some {}", shadow_root.is_some()));
                 
-                shadow_root.unwrap().dispatch_event(&custom_event).unwrap();
+                shadow_root.unwrap().host().dispatch_event(&custom_event).unwrap();
                 log("Event dispatched from shadow root");
+
+                if let Some(shadow_root) = input.get_root_node().dyn_into::<ShadowRoot>().ok() {
+                    if let Some(host) = shadow_root.host().dyn_into::<Element>().ok() {
+                        let host = shadow_root.host().dyn_into::<Element>().unwrap();
+                        let custom_element = host.dyn_into::<MyTextField>();
+                    
+                        // Set the value of the custom element to the value of the input element
+                        custom_element.set_value(&input.value());
+
+
+                        // Assuming the host is also an input element
+                        if let Ok(host_input) = host.dyn_into::<Element>() {
+                            let custom_element = host_input.dyn_into::<MyTextField>()?;
+
+                            // Set the value of the custom element to the value of the input element
+                            custom_element.set_value(&input_element.value());
+                            host_input.set_value(&input.value());
+                        }
+                    }
+                }
             }
         }) as Box<dyn FnMut(_)>);
 
@@ -140,18 +160,6 @@ impl MyTextField {
         closure.forget(); // Important! Otherwise, the closure will be deallocated.
 
         el.unchecked_into() 
-    }
-
-    
-    pub fn get_shadow_root_from_input(input_element: &Element) -> Option<ShadowRoot> {
-        let mut node: Option<Node> = Some(input_element.clone().into());
-        while let Some(current_node) = node.take() { // Use take() to replace the current value with None
-            if let Ok(shadow_root) = current_node.clone().dyn_into::<ShadowRoot>() {
-                return Some(shadow_root);
-            }
-            node = current_node.parent_node();
-        }
-        None
     }
 }
 

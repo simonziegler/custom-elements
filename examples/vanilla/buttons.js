@@ -68,8 +68,9 @@ class tf extends HTMLElement {
     ceTextField.setAttribute("label", "Label");
     document.body.appendChild(ceTextField);
 
-    ceTextField.shadowRoot.addEventListener('change', (event) => {
+    ceTextField.addEventListener('change', (event) => {
       console.log('button.js: Text Field changed:', event.detail);
+      console.log('button.js: Text Field value:', ceTextField.value);
     });
   
     update.disabled = false;
