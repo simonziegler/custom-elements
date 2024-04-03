@@ -124,15 +124,14 @@ impl MyTextField {
         let closure = Closure::wrap(Box::new(move |e: Event| {
             if let Some(input) = e.target().and_then(|t| t.dyn_into::<HtmlInputElement>().ok()) {
                 log(&format!("Input event: {}", input.value()));
+                
                 // Emit the custom event from the web component
                 let custom_event = web_sys::CustomEvent::new("change").unwrap();
                 let shadow_root = get_shadow_root_from_input(&input);
                 log(&format!("Shadow root is some {}", shadow_root.is_some()));
-                // let x = Some(shadow_root);
+                
                 shadow_root.unwrap().dispatch_event(&custom_event).unwrap();
                 log("Event dispatched from shadow root");
-
-
             }
         }) as Box<dyn FnMut(_)>);
 
