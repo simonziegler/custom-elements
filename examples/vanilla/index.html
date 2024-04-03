@@ -12,6 +12,7 @@
       }
       main();
     </script>
+    <script defer src="buttons.js"></script>
     <style>
       /* This will only affect the paragraph outside the Web Components. */
       p { color: blue; }
@@ -22,7 +23,14 @@
     <ce-vanilla></ce-vanilla>
     <ce-vanilla name="Alice"></ce-vanilla>
     <ce-vanilla name="Bob"></ce-vanilla>
-    <ce-text-field id="tf" label="Text Field"></ce-text-field>
+
+    <div>
+      <button class="add">Add custom-square to DOM</button>
+      <button class="update">Update attributes</button>
+      <button class="remove">Remove custom-square from DOM</button>
+    </div>
+
+    <!-- <ce-text-field id="tf" label="Text Field Label"></ce-text-field> -->
     <script type="module">
       var tf = document.getElementById('tf');
 

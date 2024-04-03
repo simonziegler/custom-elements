@@ -62,15 +62,15 @@ impl CustomElement for MyWebComponent {
     }
 
     fn connected_callback(&mut self, _this: &HtmlElement) {
-        log("connected");
+        //log("connected");
     }
 
     fn disconnected_callback(&mut self, _this: &HtmlElement) {
-        log("disconnected");
+        //log("disconnected");
     }
 
     fn adopted_callback(&mut self, _this: &HtmlElement) {
-        log("adopted");
+        //log("adopted");
     }
 }
 
@@ -85,6 +85,7 @@ impl CustomElement for MyWebComponent {
 
 
 struct MyTextField {
+    label: Text,
     input: HtmlInputElement,
 }
 
@@ -92,16 +93,19 @@ impl MyTextField {
     fn new() -> Self {
         let window = window().unwrap();
         let document = window.document().unwrap();
+        let label = document.create_text_node("label");
         let input = document.create_element("input").unwrap().dyn_into::<HtmlInputElement>().unwrap();
-        Self { input }
+        Self { label, input }
     }
 
     fn view(&self) -> Node {
         let window = window().unwrap();
         let document = window.document().unwrap();
         let el: web_sys::Element = document.create_element("p").unwrap();
+        el.append_child(&self.label).unwrap();
         el.append_child(&self.input).unwrap();
 
+        let _zz: web_sys::Element = document.create_element("label").unwrap();
         let tf: web_sys::Element = document.create_element("input").unwrap();
 
         let input_clone = self.input.clone();
@@ -129,6 +133,14 @@ impl Default for MyTextField {
     }
 }
 
+// Implementing Drop for MyTextField to log when it's dropped
+impl Drop for MyTextField {
+    fn drop(&mut self) {
+        log("MyTextField dropped");
+    }
+}
+
+
 // Here's the interesting part: configuring the Custom Element
 impl CustomElement for MyTextField {
     fn inject_children(&mut self, this: &HtmlElement) {
@@ -148,10 +160,11 @@ impl CustomElement for MyTextField {
         _old_value: Option<String>,
         new_value: Option<String>,
     ) {
-        // if name == "label" {
-        //     self.input
-        //         .set_data(&new_value.unwrap_or_else(|| "label".to_string()));
-        // }
+        log("attribute changed");        
+        if name == "label" {
+            self.label
+                .set_data(&new_value.unwrap_or_else(|| "label".to_string()));
+        }
     }
 
     fn connected_callback(&mut self, _this: &HtmlElement) {

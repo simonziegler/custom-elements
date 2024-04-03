@@ -1,0 +1,8 @@
+# .gitignore
+
+# Compiled files
+/target/
+/examples/vanilla/target/
+
+# Dependency directories
+/.cargo/
