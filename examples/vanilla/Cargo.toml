@@ -21,9 +21,11 @@ version = "0.3"
 features = [
   "Window",
   "Document",
+  "Element",
   "HtmlElement",
   "Node",
   "Text",
   "CustomEvent",
-  "CustomEventInit"
+  "CustomEventInit",
+  "ShadowRoot"
 ]

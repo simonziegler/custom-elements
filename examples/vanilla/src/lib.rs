@@ -1,7 +1,7 @@
 use custom_elements::{inject_style, CustomElement};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{window, HtmlElement, HtmlInputElement, Node, Text, Event, EventTarget, CustomEvent, CustomEventInit};
+use web_sys::{window, Element, HtmlElement, HtmlInputElement, Node, Text, Event, EventTarget, CustomEvent, CustomEventInit, ShadowRoot};
 use wasm_bindgen::closure::Closure;
 
 // The boring part: a basic DOM component
@@ -110,13 +110,29 @@ impl MyTextField {
         let _tf: web_sys::Element = document.create_element("input").unwrap();
 
         
+        fn get_shadow_root_from_input(input_element: &Element) -> Option<ShadowRoot> {
+            let mut node: Option<Node> = Some(input_element.clone().into());
+            while let Some(current_node) = node.take() { // Use take() to replace the current value with None
+                if let Ok(shadow_root) = current_node.clone().dyn_into::<ShadowRoot>() {
+                    return Some(shadow_root);
+                }
+                node = current_node.parent_node();
+            }
+            None
+        }
+
         let closure = Closure::wrap(Box::new(move |e: Event| {
             if let Some(input) = e.target().and_then(|t| t.dyn_into::<HtmlInputElement>().ok()) {
                 log(&format!("Input event: {}", input.value()));
                 // Emit the custom event from the web component
                 let custom_event = web_sys::CustomEvent::new("change").unwrap();
-                input.dispatch_event(&custom_event).unwrap();
-                log("Event dispatched");
+                let shadow_root = get_shadow_root_from_input(&input);
+                log(&format!("Shadow root is some {}", shadow_root.is_some()));
+                // let x = Some(shadow_root);
+                shadow_root.unwrap().dispatch_event(&custom_event).unwrap();
+                log("Event dispatched from shadow root");
+
+
             }
         }) as Box<dyn FnMut(_)>);
 
@@ -127,6 +143,17 @@ impl MyTextField {
         el.unchecked_into() 
     }
 
+    
+    pub fn get_shadow_root_from_input(input_element: &Element) -> Option<ShadowRoot> {
+        let mut node: Option<Node> = Some(input_element.clone().into());
+        while let Some(current_node) = node.take() { // Use take() to replace the current value with None
+            if let Ok(shadow_root) = current_node.clone().dyn_into::<ShadowRoot>() {
+                return Some(shadow_root);
+            }
+            node = current_node.parent_node();
+        }
+        None
+    }
 }
 
 

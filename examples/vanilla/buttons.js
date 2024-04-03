@@ -69,7 +69,7 @@ class tf extends HTMLElement {
     document.body.appendChild(ceTextField);
 
     ceTextField.addEventListener('change', (event) => {
-      console.log('Text Field changed:', event.detail);
+      console.log('button.js: Text Field changed:', event.detail);
     });
   
     update.disabled = false;
