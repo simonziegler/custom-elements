@@ -105,8 +105,8 @@ impl MyTextField {
         el.append_child(&self.label).unwrap();
         el.append_child(&self.input).unwrap();
 
-        let _zz: web_sys::Element = document.create_element("label").unwrap();
-        let tf: web_sys::Element = document.create_element("input").unwrap();
+        let _l: web_sys::Element = document.create_element("label").unwrap();
+        let _tf: web_sys::Element = document.create_element("input").unwrap();
 
         let input_clone = self.input.clone();
         
@@ -123,7 +123,7 @@ impl MyTextField {
         self.input.add_event_listener_with_callback("change", closure.as_ref().unchecked_ref()).unwrap();
         
         closure.forget(); // Important! Otherwise, the closure will be deallocated.
-        tf.unchecked_into() 
+        el.unchecked_into() 
     }
 }
 
@@ -132,6 +132,7 @@ impl Default for MyTextField {
         Self::new()
     }
 }
+
 
 // Implementing Drop for MyTextField to log when it's dropped
 impl Drop for MyTextField {
