@@ -1,5 +1,5 @@
 // Create a class for the element
-class Square extends HTMLElement {
+class tf extends HTMLElement {
     // Specify observed attributes so that
     // attributeChangedCallback will work
     static get observedAttributes() {
@@ -19,25 +19,25 @@ class Square extends HTMLElement {
     }
   
     connectedCallback() {
-      console.log("Custom square element added to page.");
+      console.log("Custom tf element added to page.");
       updateStyle(this);
     }
   
     disconnectedCallback() {
-      console.log("Custom square element removed from page.");
+      console.log("Custom tf element removed from page.");
     }
   
     adoptedCallback() {
-      console.log("Custom square element moved to new page.");
+      console.log("Custom tf element moved to new page.");
     }
   
     attributeChangedCallback(name, oldValue, newValue) {
-      console.log("Custom square element attributes changed.");
+      console.log("Custom tf element attributes changed.");
       updateStyle(this);
     }
   }
   
-  customElements.define("custom-square", Square);
+  customElements.define("custom-tf", tf);
   
   function updateStyle(elem) {
     const shadow = elem.shadowRoot;
@@ -53,7 +53,7 @@ class Square extends HTMLElement {
   const add = document.querySelector(".add");
   const update = document.querySelector(".update");
   const remove = document.querySelector(".remove");
-  let square;
+  let myTextField;
   
   update.disabled = true;
   remove.disabled = true;
@@ -63,10 +63,14 @@ class Square extends HTMLElement {
   }
   
   add.onclick = function () {
-    // Create a custom square element
-    square = document.createElement("ce-text-field");
-    square.setAttribute("label", "Label");
-    document.body.appendChild(square);
+    // Create a custom tf element
+    myTextField = document.createElement("ce-text-field");
+    myTextField.setAttribute("label", "Label");
+    document.body.appendChild(myTextField);
+
+    myTextField.addEventListener('change', (event) => {
+      console.log('Text Field changed:', event.detail);
+    });
   
     update.disabled = false;
     remove.disabled = false;
@@ -74,13 +78,13 @@ class Square extends HTMLElement {
   };
   
   update.onclick = function () {
-    // Randomly update square's attributes
-    square.setAttribute("label", "New Label");
+    // Randomly update text field's attributes
+    myTextField.setAttribute("label", "New Label");
   };
   
   remove.onclick = function () {
-    // Remove the square
-    document.body.removeChild(square);
+    // Remove the text field
+    document.body.removeChild(myTextField);
   
     update.disabled = true;
     remove.disabled = true;
