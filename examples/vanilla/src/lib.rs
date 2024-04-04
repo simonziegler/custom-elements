@@ -136,19 +136,19 @@ impl MyTextField {
                 if let Some(shadow_root) = input.get_root_node().dyn_into::<ShadowRoot>().ok() {
                     if let Some(host) = shadow_root.host().dyn_into::<Element>().ok() {
                         let host = shadow_root.host().dyn_into::<Element>().unwrap();
-                        let custom_element = host.dyn_into::<MyTextField>();
+                        //let custom_element = host.dyn_into::<MyTextField>();
                     
                         // Set the value of the custom element to the value of the input element
-                        custom_element.set_value(&input.value());
+                        //custom_element.set_value(&input.value());
 
 
                         // Assuming the host is also an input element
                         if let Ok(host_input) = host.dyn_into::<Element>() {
-                            let custom_element = host_input.dyn_into::<MyTextField>()?;
+                            //let custom_element = host_input.dyn_into::<MyTextField>()?;
 
                             // Set the value of the custom element to the value of the input element
-                            custom_element.set_value(&input_element.value());
-                            host_input.set_value(&input.value());
+                            //custom_element.set_value(&input_element.value());
+                            //host_input.set_value(&input.value());
                         }
                     }
                 }
