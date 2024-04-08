@@ -54,7 +54,7 @@ impl MateriaTextField {
 
         let closure = Closure::wrap(Box::new(move |e: Event| {
             if let Some(input) = e.target().and_then(|t| t.dyn_into::<HtmlInputElement>().ok()) {
-                log(&format!("Input event: {}", input.value()));
+                log(&format!("Shadow DOM {} event: {}", e.type_(), input.value()));
                 
                 // Emit the custom event from the web component
                 let custom_event = web_sys::CustomEvent::new("change").unwrap();
@@ -66,37 +66,27 @@ impl MateriaTextField {
                 );
 
                 let shadow_root = get_shadow_root_from_input(&input);
-                log(&format!("Shadow root is some {}", shadow_root.is_some()));
-                
                 shadow_root.unwrap().host().dispatch_event(&custom_event).unwrap();
+                
                 // Cannot do this because the closure no longer implements FnMut, and only FnOnce
                 //self.parent.unwrap().dispatch_event(&custom_event).unwrap();
                 
-                log("Event dispatched from shadow root");
+                //log("Event dispatched from shadow root");
 
-                if let Some(shadow_root) = input.get_root_node().dyn_into::<ShadowRoot>().ok() {
-                    if let Some(_host) = shadow_root.host().dyn_into::<Element>().ok() {
-                        let host = shadow_root.host().dyn_into::<Element>().unwrap();
-                        //let custom_element = host.dyn_into::<MateriaTextField>();
-                    
-                        // Set the value of the custom element to the value of the input element
-                        //custom_element.set_value(&input.value());
+                // if let Some(shadow_root) = input.get_root_node().dyn_into::<ShadowRoot>().ok() {
+                //     if let Some(_host) = shadow_root.host().dyn_into::<Element>().ok() {
+                //         let host = shadow_root.host().dyn_into::<Element>().unwrap();
 
-
-                        // Assuming the host is also an input element
-                        if let Ok(host_input) = host.dyn_into::<Element>() {
-                            let custom_element = host_input.dyn_into::<HtmlElement>().unwrap();
-
-                            // Set the value of the custom element to the value of the input element
-                            //custom_element.set_value(&input_element.value());
-                            //custom_element.set_value(&input.value());
-                            //custom_element.dispatch_event(&e).unwrap();
-                        }
-                    }
-                }
+                //         // Assuming the host is also an input element
+                //         if let Ok(host_input) = host.dyn_into::<Element>() {
+                //             let _custom_element = host_input.dyn_into::<HtmlElement>().unwrap();
+                //         }
+                //     }
+                // }
             }
         }) as Box<dyn FnMut(_)>);
 
+        el.add_event_listener_with_callback("input", closure.as_ref().unchecked_ref()).unwrap();
         el.add_event_listener_with_callback("change", closure.as_ref().unchecked_ref()).unwrap();
 
         closure.forget(); // Important! Otherwise, the closure will be deallocated.

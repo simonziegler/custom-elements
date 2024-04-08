@@ -68,8 +68,12 @@ class tf extends HTMLElement {
     mtTextField.setAttribute("label", "Label");
     document.body.appendChild(mtTextField);
 
+    mtTextField.addEventListener('input', (event) => {
+      console.log('button.js', event.type, 'event:', event.detail);
+    });
+  
     mtTextField.addEventListener('change', (event) => {
-      console.log('button.js: Text Field ', event.type, ':', event.detail);
+      console.log('button.js', event.type, 'event:', event.detail);
     });
   
     update.disabled = false;
