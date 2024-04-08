@@ -90,4 +90,7 @@ class tf extends HTMLElement {
     update.disabled = true;
     remove.disabled = true;
     add.disabled = false;
+
+    // Use this to force garbage collection only when using Chrome with the --js-flags="--expose-gc" flag from the run-chrome.ps1 script
+    //window.gc();
   };

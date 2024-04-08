@@ -4,86 +4,6 @@ use wasm_bindgen::JsCast;
 use web_sys::{window, Element, HtmlElement, HtmlInputElement, Node, Text, Event, CustomElementRegistry, ShadowRoot};
 use wasm_bindgen::closure::Closure;
 
-// The boring part: a basic DOM component
-struct MyWebComponent {
-    name_node: Text,
-}
-
-impl MyWebComponent {
-    fn new() -> Self {
-        let window = window().unwrap();
-        let document = window.document().unwrap();
-        let name_node = document.create_text_node("friend");
-        Self { name_node }
-    }
-
-    fn view(&self) -> Node {
-        let window = window().unwrap();
-        let document = window.document().unwrap();
-        let el = document.create_element("p").unwrap();
-        let t1 = document.create_text_node("Welcome to my web component, ");
-        let t3 = document.create_text_node("!");
-        el.append_child(&t1).unwrap();
-        el.append_child(&self.name_node).unwrap();
-        el.append_child(&t3).unwrap();
-
-        el.unchecked_into()
-    }
-}
-
-impl Default for MyWebComponent {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-// Here's the interesting part: configuring the Custom Element
-impl CustomElement for MyWebComponent {
-    fn inject_children(&mut self, this: &HtmlElement) {
-        inject_style(&this, "p { color: green; }");
-        let node = self.view();
-        this.append_child(&node).unwrap_throw();
-    }
-
-    fn observed_attributes() -> &'static [&'static str] {
-        &["name"]
-    }
-
-    fn attribute_changed_callback(
-        &mut self,
-        _this: &HtmlElement,
-        name: String,
-        _old_value: Option<String>,
-        new_value: Option<String>,
-    ) {
-        if name == "name" {
-            self.name_node
-                .set_data(&new_value.unwrap_or_else(|| "friend".to_string()));
-        }
-    }
-
-    fn connected_callback(&mut self, _this: &HtmlElement) {
-        //log("connected");
-    }
-
-    fn disconnected_callback(&mut self, _this: &HtmlElement) {
-        //log("disconnected");
-    }
-
-    fn adopted_callback(&mut self, _this: &HtmlElement) {
-        //log("adopted");
-    }
-}
-
-
-
-
-
-
-
-
-
-
 
 struct MyTextField {
     label: Text,
@@ -167,6 +87,7 @@ impl MyTextField {
 
 impl Default for MyTextField {
     fn default() -> Self {
+        log("MyTextField new");
         Self::new()
     }
 }
@@ -227,7 +148,6 @@ impl CustomElement for MyTextField {
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
     // define the Custom Element
-    MyWebComponent::define("ce-vanilla");
     MyTextField::define("ce-text-field");
 
     Ok(())
