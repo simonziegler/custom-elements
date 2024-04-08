@@ -13,30 +13,13 @@
       main();
     </script>
     <script defer src="buttons.js"></script>
-    <style>
-      /* This will only affect the paragraph outside the Web Components. */
-      p { color: blue; }
-    </style>
 	</head>
   <body>
-    <p>This text should be blue, because it's not affected by the encapsulated style. (The counts should be green!)</p>
-    <ce-vanilla></ce-vanilla>
-    <ce-vanilla name="Alice"></ce-vanilla>
-    <ce-vanilla name="Bob"></ce-vanilla>
-
-    <div>
-      <button class="add">Add custom-square to DOM</button>
-      <button class="update">Update attributes</button>
-      <button class="remove">Remove custom-square from DOM</button>
+    <p>Press the buttons to add and remove the Materia Text Field and to change its label.</p>
+    <div style="margin: 12px 0px;">
+      <button class="add" style="margin-right: 12px;">Add custom-square to DOM</button>
+      <button class="update" style="margin-right: 12px;">Update attributes</button>
+      <button class="remove" style="margin-right: 12px;">Remove custom-square from DOM</button>
     </div>
-
-    <!-- <ce-text-field id="tf" label="Text Field Label"></ce-text-field> -->
-    <!-- <script type="module">
-      var tf = document.getElementById('tf');
-
-      tf.addEventListener('change', (event) => {
-        console.log('Text Field changed:', event.detail);
-      });
-    </script> -->
   </body>
 </html>

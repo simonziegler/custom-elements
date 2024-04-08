@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug WASM",
+            "type": "pwa-node",
+            "request": "launch",
+            "program": "${workspaceFolder}/path/to/your/program",
+            "args": ["arg1", "arg2"], // Your program's arguments
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "your-build-task", // This should match a task defined in tasks.json that builds your WASM
+            "outFiles": ["${workspaceFolder}/path/to/compiled/js/*.js"], // The location of your compiled JavaScript files
+            "sourceMaps": true,
+            "smartStep": true,
+            "internalConsoleOptions": "openOnSessionStart"
+        }
+    ]
+}
