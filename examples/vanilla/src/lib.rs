@@ -6,16 +6,16 @@ use wasm_bindgen::closure::Closure;
 
 
 struct MyTextField {
-    label: Text,
-    input: HtmlInputElement,
+    label: Option<Text>,
+    input: Option<HtmlInputElement>,
 }
 
 impl MyTextField {
     fn new() -> Self {
         let window = window().unwrap();
         let document = window.document().unwrap();
-        let label = document.create_text_node("label");
-        let input = document.create_element("input").unwrap().dyn_into::<HtmlInputElement>().unwrap();
+        let label: Option<Text> = Some(document.create_text_node("label"));
+        let input: Option<HtmlInputElement> = Some(document.create_element("input").unwrap().dyn_into::<HtmlInputElement>().unwrap());
         Self { label, input }
     }
 
@@ -23,8 +23,16 @@ impl MyTextField {
         let window = window().unwrap();
         let document = window.document().unwrap();
         let el: web_sys::Element = document.create_element("p").unwrap();
-        el.append_child(&self.label).unwrap();
-        el.append_child(&self.input).unwrap();
+
+        if let Some(label) = &self.label {
+            el.append_child(label).unwrap();
+        }
+
+        if let Some(input) = &self.input {
+            el.append_child(input).unwrap();
+        }
+        // el.append_child(&self.label).unwrap();
+        // el.append_child(&self.input).unwrap();
 
         let _l: web_sys::Element = document.create_element("label").unwrap();
         let _tf: web_sys::Element = document.create_element("input").unwrap();
@@ -121,14 +129,28 @@ impl CustomElement for MyTextField {
     ) {
         log("attribute changed");        
         if name == "label" {
-            self.label
-                .set_data(&new_value.unwrap_or_else(|| "label".to_string()));
+            if let Some(label) = &self.label {
+                label.set_data(&new_value.unwrap_or_else(|| "label".to_string()));
+            }
+
+            // self.label
+            //     .set_data(&new_value.unwrap_or_else(|| "label".to_string()));
         }
     }
 
     fn connected_callback(&mut self, _this: &HtmlElement) {
         log("connected");// Emit change event when the input value changes
+ 
+        // if let Some(input) = &self.input {
+        //     let input = input.clone();
+
+        //     input.set_oninput(Some(Box::new(move |_| {
+        //         self.emit_change_event(&input);
+        //     })));
+        // }
+
         // let input = self.input.clone();
+        
         // input.set_oninput(Some(Box::new(move |_| {
         //     self.emit_change_event(&input);
         // })));
@@ -136,6 +158,9 @@ impl CustomElement for MyTextField {
 
     fn disconnected_callback(&mut self, _this: &HtmlElement) {
         log("disconnected");
+
+        self.label = None;
+        //self.input = None;
     }
 
     fn adopted_callback(&mut self, _this: &HtmlElement) {
